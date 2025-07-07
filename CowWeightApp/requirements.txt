@@ -1,0 +1,31 @@
+# Core
+torch>=2.0.0
+numpy
+opencv-python
+pillow
+
+# FastAPI & Uvicorn
+fastapi
+uvicorn[standard]
+
+# Streamlit
+streamlit
+
+# Transformers (for Depth Anything)
+transformers
+huggingface-hub
+
+# SAM2 dependencies (edit if extra needed for your checkpoint)
+omegaconf
+einops
+
+# Data handling
+python-multipart
+requests
+pandas
+
+# Image processing
+scikit-image
+
+# Optional (in case SAM2 or Hugging Face needs it)
+tqdm
