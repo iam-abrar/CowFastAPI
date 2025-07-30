@@ -3,6 +3,8 @@
 import numpy as np
 import torch
 
+import cv2
+
 
 def extract_mask_features(mask):
     """Compute area, width, height, and aspect ratio from binary mask."""

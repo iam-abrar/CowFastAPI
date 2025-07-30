@@ -1,8 +1,7 @@
-# model.py
-
-import torch
-import torch.nn as nn
 from torchvision.models import resnet18, ResNet18_Weights
+import torch.nn as nn
+import torch
+
 
 class FiLMBlock(nn.Module):
     def __init__(self, tab_dim, feat_dim):
@@ -15,15 +14,17 @@ class FiLMBlock(nn.Module):
         beta = self.beta(tab_feat).unsqueeze(-1).unsqueeze(-1)
         return gamma * cnn_feat + beta
 
+
 class MultiHeadAttentionFusion(nn.Module):
     def __init__(self, img_dim, tab_dim, num_heads=4, dropout=0.1):
         super().__init__()
         self.query = nn.Linear(tab_dim, img_dim)
         self.key = nn.Linear(img_dim, img_dim)
         self.value = nn.Linear(img_dim, img_dim)
+        self.num_heads = num_heads
+        self.dropout = nn.Dropout(dropout)
         self.out_proj = nn.Linear(img_dim, img_dim)
         self.norm = nn.LayerNorm(img_dim)
-        self.dropout = nn.Dropout(dropout)
 
     def forward(self, img_feat, tab_feat):
         Q = self.query(tab_feat).unsqueeze(1)
@@ -36,12 +37,14 @@ class MultiHeadAttentionFusion(nn.Module):
         out = self.dropout(out)
         return self.norm(out)
 
+
 class CowWeightEstimator(nn.Module):
     def __init__(self, tabular_dim=8):
+
+        print("Initializing CowWeightEstimator with tabular_dim =", tabular_dim)
         super().__init__()
         self.cnn = resnet18(weights=ResNet18_Weights.DEFAULT)
 
-        # Extend to 4 channels
         orig_conv = self.cnn.conv1
         self.cnn.conv1 = nn.Conv2d(
             4, orig_conv.out_channels,
@@ -50,19 +53,19 @@ class CowWeightEstimator(nn.Module):
             padding=orig_conv.padding,
             bias=orig_conv.bias is not None
         )
+
         with torch.no_grad():
             self.cnn.conv1.weight[:, :3, :, :] = orig_conv.weight
             self.cnn.conv1.weight[:, 3:, :, :] = orig_conv.weight.mean(dim=1, keepdim=True)
 
-        # Encoder layers
         self.layer1 = self.cnn.layer1
         self.layer2 = self.cnn.layer2
         self.layer3 = self.cnn.layer3
         self.layer4 = self.cnn.layer4
+
         self.num_ftrs = self.cnn.fc.in_features
         self.cnn.fc = nn.Identity()
 
-        # Tabular path
         self.tabular_mlp = nn.Sequential(
             nn.Linear(tabular_dim, 64),
             nn.ReLU(),
@@ -72,18 +75,16 @@ class CowWeightEstimator(nn.Module):
             nn.Dropout(0.1)
         )
 
-        # FiLM layers
         self.film2 = FiLMBlock(32, 128)
         self.film3 = FiLMBlock(32, 256)
 
-        # Attention and gating
-        self.attn_fusion = MultiHeadAttentionFusion(self.num_ftrs, 32)
+        self.attn_fusion = MultiHeadAttentionFusion(self.num_ftrs, 32, num_heads=4, dropout=0.1)
+
         self.tabular_gate = nn.Sequential(
             nn.Linear(32, self.num_ftrs),
             nn.Sigmoid()
         )
 
-        # Regression head
         self.head = nn.Sequential(
             nn.LayerNorm(self.num_ftrs),
             nn.Linear(self.num_ftrs, 64),
