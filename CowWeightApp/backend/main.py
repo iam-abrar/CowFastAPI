@@ -13,12 +13,18 @@ from model import CowWeightEstimator
 
 # ==================== CONFIG ====================
 DEVICE = torch.device("cpu")
-
+# MODEL_PATHS = {
+#     "side_all_small": "/mnt/78707D0F707CD57A/CowFastAPI/CowWeightApp/backend/model/best_model_singleALL.pth",
+#     "side_all_full": "/mnt/78707D0F707CD57A/CowFastAPI/CowWeightApp/backend/model/best_modelFullSideALL.pth",
+#     "rgb_only_small": "/mnt/78707D0F707CD57A/CowFastAPI/CowWeightApp/backend/model/best_model_SideRgbOnly.pth",
+#     "rgb_only_full": "/mnt/78707D0F707CD57A/CowFastAPI/CowWeightApp/backend/model/best_modelFullSideRBGOnly.pth"
+# }
+# colab
 MODEL_PATHS = {
-    "side_all_small": "/mnt/78707D0F707CD57A/CowFastAPI/CowWeightApp/backend/model/best_model_singleALL.pth",
-    "side_all_full": "/mnt/78707D0F707CD57A/CowFastAPI/CowWeightApp/backend/model/best_modelFullSideALL.pth",
-    "rgb_only_small": "/mnt/78707D0F707CD57A/CowFastAPI/CowWeightApp/backend/model/best_model_SideRgbOnly.pth",
-    "rgb_only_full": "/mnt/78707D0F707CD57A/CowFastAPI/CowWeightApp/backend/model/best_modelFullSideRBGOnly.pth"
+    "side_all_small": "/content/CowFastAPI/CowWeightApp/backend/model/best_model_singleALL.pth",
+    "side_all_full": "/content/CowFastAPI/CowWeightApp/backend/model/best_modelFullSideALL.pth",
+    "rgb_only_small": "/content/CowFastAPI/CowWeightApp/backend/model/best_modelFullSideRBGOnly.pth",
+    "rgb_only_full": "/content/CowFastAPI/CowWeightApp/backend/model/best_model_SideRgbOnly.pth"
 }
 
 LOADED_MODELS = {}
