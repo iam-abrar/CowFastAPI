@@ -90,7 +90,6 @@ rich==14.0.0
 rpds-py==0.26.0
 ruff==0.12.2
 safetensors==0.5.3
--e git+https://github.com/iam-abrar/CowFastAPI.git@630511152967b61d62d653a63ac5ee5a3d42723d#egg=SAM_2&subdirectory=CowWeightApp/backend/sam2
 scikit-image==0.25.2
 scikit-learn==1.7.0
 scipy==1.15.3
